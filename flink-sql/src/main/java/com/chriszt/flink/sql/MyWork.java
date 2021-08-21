@@ -8,69 +8,51 @@ import org.apache.flink.table.api.Schema;
 import org.apache.flink.table.api.Table;
 import org.apache.flink.table.api.TableResult;
 import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MyWork {
 
+    private Logger log = LoggerFactory.getLogger(this.getClass());
+
     public void work1(String filePath) {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-
+        env.setParallelism(1);
         DataStream<String> rawStream = env.readTextFile(filePath);
 //        rawStream.print("rawStream");
-
-        DataStream<User> tabStream = rawStream.map(new MapFunction<String, User>() {
-            @Override
-            public User map(String s) throws Exception {
-                String[] token = s.split(",");
-                return new User(Integer.parseInt(token[0]), token[1], Integer.parseInt(token[2]));
-            }
+        DataStream<User> userStream = rawStream.map(s -> {
+            String[] tokens = s.split(",");
+            return new User(Integer.parseInt(tokens[0]), tokens[1], tokens[2], Integer.parseInt(tokens[3]));
         });
-//        tabStream.print("tabStream");
+//        userStream.print("userStream");
 
         StreamTableEnvironment tabEnv = StreamTableEnvironment.create(env);
-        Schema schema1 = Schema.newBuilder()
-                .column("id", "int")
-                .column("name", "STRING")
-                .column("age", "int")
-                .build();
-        Table tab1 = tabEnv.fromDataStream(tabStream, schema1);
-        tabEnv.createTemporaryView("tab1", tab1);
-        tabEnv.from("tab1").printSchema();
+        Schema userSchema = Schema.newBuilder()
+                                  .column("id", "INTEGER")
+                                  .column("clazz", "STRING")
+                                  .column("name", "STRING")
+                                  .column("age", "INTEGER")
+                                  .columnByExpression("inTime", "PROCTIME()")
+                                  .build();
+        tabEnv.createTemporaryView("UserTab", userStream, userSchema);
 
-
-        TableResult tabRet1 = tabEnv.executeSql("select * from tab1");
-        tabRet1.print();
-/*
-+----+-------------+--------------------------------+-------------+
-| op |          id |                           name |         age |
-+----+-------------+--------------------------------+-------------+
-| +I |           3 |                         yanlin |          35 |
-| +I |           4 |                        chriszt |          25 |
-| +I |           2 |                           lisi |          20 |
-| +I |           1 |                       zhangsan |          18 |
-+----+-------------+--------------------------------+-------------+
-4 rows in set
-*/
-
-        TableResult tabRet2 = tabEnv.executeSql("select * from tab1 where id=3 or name='chriszt'");
-        tabRet2.print();
-/*
-+----+-------------+--------------------------------+-------------+
-| op |          id |                           name |         age |
-+----+-------------+--------------------------------+-------------+
-| +I |           4 |                        chriszt |          25 |
-| +I |           3 |                         yanlin |          35 |
-+----+-------------+--------------------------------+-------------+
-2 rows in set
-*/
-
+        tabEnv.executeSql(FlinkSQL.RULE1).print();
+//        tabEnv.executeSql(FlinkSQL.RULE2).print();
+        tabEnv.executeSql(CepSQL.RULE1).print();
 
 
         try {
-            JobExecutionResult exeRet = env.execute();
-            System.out.println("Execution Time: " + exeRet.getNetRuntime() + "ms");
+            JobExecutionResult res = env.execute();
+            System.out.println("NetRuntime: " + res.getNetRuntime() + "ms");
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println(e.getMessage());
         }
+    }
+
+    public static void main(String[] args) {
+//        String filePath = MyWork.class.getResource("/tab1.csv").getPath();
+        String filePath = "/home/yl/proj/flink-demo/sql-cli/userTab.csv";
+        new MyWork().work1(filePath);
     }
 
 }

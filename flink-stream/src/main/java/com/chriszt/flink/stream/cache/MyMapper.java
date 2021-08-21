@@ -13,12 +13,12 @@ public class MyMapper extends RichMapFunction<Long, String> {
     private String cacheStr = null;
 
     private String readFile(File file) {
-        StringBuffer sbf = new StringBuffer();
-        BufferedReader reader = null;
+        StringBuilder sbf = new StringBuilder();
+        BufferedReader reader;
 
         try {
             reader = new BufferedReader(new FileReader(file));
-            String tmpStr = null;
+            String tmpStr;
             while((tmpStr = reader.readLine()) != null) {
                 sbf.append(tmpStr);
             }

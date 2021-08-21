@@ -4,6 +4,8 @@ public class User {
 
     private int id;
 
+    private String clazz;
+
     private String name;
 
     private int age;
@@ -11,8 +13,9 @@ public class User {
     public User() {
     }
 
-    public User(int id, String name, int age) {
+    public User(int id, String clazz, String name, int age) {
         this.id = id;
+        this.clazz = clazz;
         this.name = name;
         this.age = age;
     }
@@ -23,6 +26,14 @@ public class User {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getClazz() {
+        return clazz;
+    }
+
+    public void setClazz(String clazz) {
+        this.clazz = clazz;
     }
 
     public String getName() {
@@ -43,7 +54,8 @@ public class User {
 
     @Override
     public String toString() {
-        return "Tab1{id:" + id +
+        return "User{id:" + id +
+                ",clazz=" + clazz +
                 ",name=" + name +
                 ",age=" + age +
                 "}";
