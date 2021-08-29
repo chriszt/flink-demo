@@ -3,6 +3,9 @@ package com.chriszt.flink.stream.operator;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class BaseOperatorTest {
 
     @Test
@@ -23,8 +26,8 @@ public class BaseOperatorTest {
     }
 
     @Test
-    public void testMapTemplate() throws Exception {
-        new BaseOperator().mapTemplate();
+    public void testMapTask() throws Exception {
+        new BaseOperator().mapTask();
     }
 
     @Test
@@ -33,18 +36,37 @@ public class BaseOperatorTest {
     }
 
     @Test
-    public void testKeyByTemplate() throws Exception {
-        new BaseOperator().keyByTemplate();
+    public void testKeyByTask() {
+        List<Trade> lst = new ArrayList<>();
+        lst.add(new Trade("123xxxx", 899, "2018-06"));
+        lst.add(new Trade("123xxxx", 699, "2018-06"));
+        lst.add(new Trade("188xxxx", 88, "2018-07"));
+        lst.add(new Trade("188xxxx", 69, "2018-07"));
+        lst.add(new Trade("158xxxx", 100, "2018-06"));
+        lst.add(new Trade("158xxxx", 1000, "2018-06"));
+        new BaseOperator().keyByTask(lst);
     }
 
     @Test
-    public void testReduceTemplate() throws Exception {
-        new BaseOperator().reduceTemplate();
+    public void testReduceTask() throws Exception {
+        List<Trade> lst = new ArrayList<>();
+        lst.add(new Trade("123xxxx", 899, "2018-06"));
+        lst.add(new Trade("123xxxx", 699, "2018-06"));
+        lst.add(new Trade("123xxxx", 88, "2018-07"));
+        lst.add(new Trade("123xxxx", 69, "2018-07"));
+        lst.add(new Trade("123xxxx", 100, "2018-06"));
+        lst.add(new Trade("188xxxx", 1000, "2018-06"));
+        new BaseOperator().reduceTask(lst);
     }
 
     @Test
-    public void testAggreTemplate() throws Exception {
-        new BaseOperator().aggreTemplate();
+    public void testAggTask() throws Exception {
+        List<Trade> lst = new ArrayList<>();
+        lst.add(new Trade("188xxxx", 30, "2018-07"));
+        lst.add(new Trade("188xxxx", 20, "2018-11"));
+        lst.add(new Trade("158xxxx", 1, "2018-07"));
+        lst.add(new Trade("158xxxx", 2, "2018-06"));
+        new BaseOperator().aggTask(lst);
     }
 
     @Test
@@ -75,6 +97,12 @@ public class BaseOperatorTest {
     @Test
     public void testIterateTemplate() throws Exception {
         new BaseOperator().iterateTemplate();
+    }
+
+    @Test
+    public void testTask() {
+        System.out.println(getClass().getResource("/"));
+        new BaseOperator().task();
     }
 
 }

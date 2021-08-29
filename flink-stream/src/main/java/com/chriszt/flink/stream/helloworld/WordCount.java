@@ -1,19 +1,14 @@
 package com.chriszt.flink.stream.helloworld;
 
 import org.apache.flink.api.common.functions.FlatMapFunction;
+import org.apache.flink.api.common.functions.ReduceFunction;
 import org.apache.flink.api.java.functions.KeySelector;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.streaming.api.datastream.DataStream;
-import org.apache.flink.streaming.api.datastream.KeyedStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.util.Collector;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 
 public class WordCount {
-
-    private static final Logger log = LogManager.getLogger();
 
     public void wordCount(String[] words) {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
@@ -36,7 +31,6 @@ public class WordCount {
         }).sum(1);
 
         ds2.print();
-        log.info("*************");
         try {
             env.execute();
         } catch (Exception e) {

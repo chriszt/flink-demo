@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class BaseOperator {
@@ -60,19 +61,23 @@ public class BaseOperator {
         env.execute();
     }
 
-    public void mapTemplate() throws Exception {
+    public void mapTask() {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
-        DataStreamSource<Long> dds1 = env.fromSequence(1, 5);
-        DataStream<Tuple2<Long, Integer>> dds2 = dds1.map(new MapFunction<Long, Tuple2<Long, Integer>>() {
+        DataStream<Long> ds1 = env.fromSequence(1, 5);
+        DataStream<Tuple2<Long, Long>> ds2 = ds1.map(new MapFunction<Long, Tuple2<Long, Long>>() {
             @Override
-            public Tuple2<Long, Integer> map(Long values) {
-                return new Tuple2<Long, Integer>(values * 100, values.hashCode());
+            public Tuple2<Long, Long> map(Long values) {
+                return new Tuple2<Long, Long>(values, values * 1000);
             }
         });
-        dds2.print();
+        ds2.print();
 
-        env.execute();
+        try {
+            env.execute();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void filterTemplate() throws Exception {
@@ -94,37 +99,44 @@ public class BaseOperator {
         env.execute();
     }
 
-    public void keyByTemplate() throws Exception {
-        List<Tuple2<Integer, Integer>> lst = new ArrayList<Tuple2<Integer, Integer>>();
-        lst.add(new Tuple2<>(1, 11));
-        lst.add(new Tuple2<>(1, 22));
-        lst.add(new Tuple2<>(3, 33));
-        lst.add(new Tuple2<>(5, 55));
+    public void keyByTask(List<Trade> lst) {
+//        List<Tuple2<Integer, Integer>> lst = new ArrayList<Tuple2<Integer, Integer>>();
+//        lst.add(new Tuple2<>(1, 11));
+//        lst.add(new Tuple2<>(1, 22));
+//        lst.add(new Tuple2<>(3, 33));
+//        lst.add(new Tuple2<>(5, 55));
 
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
-        DataStream<Tuple2<Integer, Integer>> ds1 = env.fromCollection(lst);
-//        KeyedStream<Tuple2<Integer, Integer>, Tuple> ks1 = ds1.keyBy(0);
-        KeyedStream<Tuple2<Integer, Integer>, Integer> ks1 = ds1.keyBy(new KeySelector<Tuple2<Integer, Integer>, Integer>() {
+        DataStream<Trade> ds = env.fromCollection(lst);
+//        ds.print("ds");
+
+        KeyedStream<Trade, String> ks = ds.keyBy(new KeySelector<Trade, String>() {
             @Override
-            public Integer getKey(Tuple2<Integer, Integer> value) throws Exception {
-                return value.f0;
+            public String getKey(Trade value) throws Exception {
+                return value.getCardNum();
             }
         });
-        ks1.print();
+        ks.print("ks");
 
-        env.execute();
+//        DataStream<Tuple2<Integer, Integer>> ds1 = env.fromCollection(lst);
+//        KeyedStream<Tuple2<Integer, Integer>, Tuple> ks1 = ds1.keyBy(0);
+//        KeyedStream<Tuple2<Integer, Integer>, Integer> ks1 = ds1.keyBy(new KeySelector<Tuple2<Integer, Integer>, Integer>() {
+//            @Override
+//            public Integer getKey(Tuple2<Integer, Integer> value) throws Exception {
+//                return value.f0;
+//            }
+//        });
+//        ks1.print();
+
+        try {
+            env.execute();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
-    public void reduceTemplate() throws Exception {
-        List<Trade> lst = new ArrayList<>();
-        lst.add(new Trade("123xxxx", 899, "2018-06"));
-        lst.add(new Trade("123xxxx", 699, "2018-06"));
-        lst.add(new Trade("188xxxx", 88, "2018-07"));
-        lst.add(new Trade("188xxxx", 69, "2018-07"));
-        lst.add(new Trade("158xxxx", 100, "2018-06"));
-        lst.add(new Trade("158xxxx", 1000, "2018-06"));
-
+    public void reduceTask(List<Trade> lst) {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
         DataStream<Trade> ds1 = env.fromCollection(lst);
@@ -136,30 +148,33 @@ public class BaseOperator {
         }).reduce(new ReduceFunction<Trade>() {
             @Override
             public Trade reduce(Trade value1, Trade value2) throws Exception {
-                System.out.println(value1+"  "+value2);
+//                System.out.println(value1 + "  " + value2);
                 return new Trade(value1.getCardNum(), value1.getTrade() + value2.getTrade(), "----");
             }
         });
-        ds2.print();
+        ds2.print("ds2");
 
-        env.execute();
+        try {
+            env.execute();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
-    public void aggreTemplate() throws Exception {
-        List<Trade> lst = new ArrayList<>();
-        lst.add(new Trade("188xxxx", 30, "2018-07"));
-        lst.add(new Trade("188xxxx", 20, "2018-11"));
-        lst.add(new Trade("158xxxx", 1, "2018-07"));
-        lst.add(new Trade("158xxxx", 2, "2018-06"));
-
+    public void aggTask(List<Trade> lst) {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
         DataStream<Trade> ds = env.fromCollection(lst);
-        KeyedStream<Trade, Tuple> ks = ds.keyBy("cardNum");
+        KeyedStream<Trade, String> ks = ds.keyBy(Trade::getCardNum);
+//        ks.print("ks");
 //        ks.sum("trade").print("sum");
-        ks.min("trade").print("min");
-//        ks.minBy("trade").print("minBy");
+//        ks.min("trade").print("min");
+        ks.minBy("trade").print("minBy");
 
-        env.execute();
+        try {
+            env.execute();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -341,5 +356,21 @@ public class BaseOperator {
 //        soso.print("Main Stream: ");
 
         env.execute();
+    }
+
+    public void task() {
+//        List<String> lst = new ArrayList<>();
+//        lst.add("aaa");
+//        lst.add("bbb");
+//        lst.add("ccc");
+//
+//        String res = String.join("-", (CharSequence) lst);
+//        System.out.println(res);
+
+        System.out.println(getClass().getResource("/"));
+    }
+
+    public static void main(String[] args) {
+        new BaseOperator().task();
     }
 }
