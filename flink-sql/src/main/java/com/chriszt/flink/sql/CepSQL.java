@@ -5,7 +5,7 @@ public class CepSQL {
     final public static String RULE1 = "SELECT * " +
             "FROM UserTab " +
             "  MATCH_RECOGNIZE ( " +
-            "    PARTITION BY id " +
+//            "    PARTITION BY id " +
             "    ORDER BY inTime " +
             "    MEASURES " +
             "      A.id AS aid, " +

@@ -34,9 +34,9 @@
     </Appenders>
 
     <Loggers>
-        <Root level="warn">
+        <Root level="info">
             <AppenderRef ref="Console" />
-            <AppenderRef ref="Save" />
+<!--            <AppenderRef ref="Save" />-->
         </Root>
         <!--
         <Logger name="mySave" level="info" additivity="true">
