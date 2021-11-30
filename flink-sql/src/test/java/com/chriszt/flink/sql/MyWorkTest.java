@@ -12,4 +12,14 @@ public class MyWorkTest {
         new MyWork().work1(filePath);
     }
 
+    @Test
+    public void testWork2() {
+        new MyWork().work2();
+    }
+
+    @Test
+    public void testWork3() {
+        new MyWork().work3();
+    }
+
 }

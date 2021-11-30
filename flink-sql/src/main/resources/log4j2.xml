@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Configuration status="warn" monitorInterval="60">
+    <properties>
+        <property name="LOG_HOME">/tmp/flink-stream</property>
+        <property name="FILE_NAME">cur</property>
+        <property name="PATTERN1">%-5level[%t] %logger{36} | %msg%n</property>
+    </properties>
+
+
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <!--
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] [%-5level] %logger{36} - %msg%n" />
+            -->
+            <PatternLayout pattern="${PATTERN1}" />
+        </Console>
+
+        <File name="Save" fileName="${LOG_HOME}/${FILE_NAME}.log">
+            <PatternLayout pattern="${PATTERN1}" />
+        </File>
+
+        <!--
+        <RollingRandomAccessFile name="Roll"
+                                 fileName="${LOG_HOME}/%i.log"
+                                 filePattern="${LOG_HOME}/$${date:yyyy-MM}/${FILE_NAME}-%d{yyyy-MM-dd HH-mm}-%i.log">
+            <PatternLayout pattern="${PATTERN1}" />
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" />
+                <SizeBasedTriggeringPolicy size="10 MB" />
+            </Policies>
+            <DefaultRolloverStrategy max="20" />
+        </RollingRandomAccessFile>
+        -->
+    </Appenders>
+
+    <Loggers>
+        <Root level="warn">
+            <AppenderRef ref="Console" />
+<!--            <AppenderRef ref="Save" />-->
+        </Root>
+        <!--
+        <Logger name="mySave" level="info" additivity="true">
+            <AppenderRef ref="Save" />
+        </Logger>
+        -->
+    </Loggers>
+</Configuration>

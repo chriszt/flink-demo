@@ -8,6 +8,7 @@ import org.apache.flink.table.api.Schema;
 import org.apache.flink.table.api.Table;
 import org.apache.flink.table.api.TableResult;
 import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
+import org.apache.flink.types.Row;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,6 +47,57 @@ public class MyWork {
             System.out.println("NetRuntime: " + res.getNetRuntime() + "ms");
         } catch (Exception e) {
             System.err.println(e.getMessage());
+        }
+    }
+
+    public void work2() {
+        StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+        StreamTableEnvironment tabEnv = StreamTableEnvironment.create(env);
+
+        DataStream<String> ds = env.fromElements("Alice", "Bob", "John");
+//        ds.print();
+
+        Table dsTab = tabEnv.fromDataStream(ds);
+//        dsTab.printSchema();
+
+        tabEnv.createTemporaryView("InputTable", dsTab);
+        Table resultTable = tabEnv.sqlQuery("select UPPER(f0) from InputTable");
+
+        DataStream<Row> resultStream1 = tabEnv.toDataStream(dsTab);
+        resultStream1.print();
+        DataStream<Row> resultStream2 = tabEnv.toDataStream(resultTable);
+        resultStream2.print();
+
+        try {
+            env.execute();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void work3() {
+        StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+        StreamTableEnvironment tabEnv = StreamTableEnvironment.create(env);
+
+        DataStream<Row> ds = env.fromElements(
+                Row.of("Alice", 12),
+                Row.of("Bob", 10),
+                Row.of("Alice", 100));
+//        ds.print();
+
+        Table inputTable = tabEnv.fromDataStream(ds).as("name", "score");
+
+        tabEnv.createTemporaryView("InputTable", inputTable);
+
+        Table resultTable = tabEnv.sqlQuery("SELECT name, SUM(score) FROM InputTable GROUP BY name");
+
+        DataStream<Row> resultStream = tabEnv.toChangelogStream(resultTable);
+        resultStream.print();
+
+        try {
+            env.execute();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
