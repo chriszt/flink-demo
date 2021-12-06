@@ -1,6 +1,5 @@
-package com.chriszt.flink.sql;
+package com.chriszt.flink.sql.streamintegration;
 
-import javafx.scene.control.Tab;
 import org.apache.flink.api.common.JobExecutionResult;
 import org.apache.flink.api.java.tuple.Tuple1;
 import org.apache.flink.api.java.tuple.Tuple2;
@@ -20,8 +19,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Instant;
-
-import static org.apache.flink.table.api.Expressions.*;
 
 public class MyWork {
 
@@ -257,7 +254,7 @@ public class MyWork {
 //        Table tab = tabEnv.fromDataStream(ds);
 //        tab.printSchema();
         // (
-        //  `f0` *com.chriszt.flink.sql.User3<`name` STRING, `score` INT>*
+        //  `f0` *com.chriszt.flink.sql.streamintegration.User3<`name` STRING, `score` INT>*
         // )
 
 // === EXAMPLE 2 ===
@@ -269,7 +266,7 @@ public class MyWork {
 //                .as("user");
 //        tab.printSchema();
         // (
-        //  `user` *com.chriszt.flink.sql.User3<`name` STRING, `score` INT>*
+        //  `user` *com.chriszt.flink.sql.streamintegration.User3<`name` STRING, `score` INT>*
         // )
 
 // === EXAMPLE 3 ===
@@ -285,7 +282,7 @@ public class MyWork {
                         .build()).as("user");
         tab.printSchema();
         // (
-        //  `user` *com.chriszt.flink.sql.User3<`name` STRING, `score` INT>*
+        //  `user` *com.chriszt.flink.sql.streamintegration.User3<`name` STRING, `score` INT>*
         // )
     }
 

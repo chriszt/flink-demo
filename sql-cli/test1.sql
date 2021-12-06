@@ -3,7 +3,5 @@ CREATE TABLE test1 (
     name STRING,
     age INT
 ) WITH (
-  'connector'='filesystem',
-  'path'='/home/yl/proj/flink-demo/sql-cli/demo.csv',
-  'format'='csv'
+  'connector'='datagen'
 );

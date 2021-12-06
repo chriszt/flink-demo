@@ -1,5 +1,6 @@
 package com.chriszt.flink.sql;
 
+import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.table.api.EnvironmentSettings;
 import org.apache.flink.table.api.Table;
@@ -13,8 +14,16 @@ public class SQLDemo {
 
     public static void main(String[] args) {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-        EnvironmentSettings es = EnvironmentSettings.newInstance().useBlinkPlanner().inStreamingMode().build();
-        StreamTableEnvironment tabEnv = StreamTableEnvironment.create(env, es);
+//        EnvironmentSettings es = EnvironmentSettings.newInstance().useBlinkPlanner().inStreamingMode().build();
+//        StreamTableEnvironment tabEnv = StreamTableEnvironment.create(env);
+        DataStream<String> ds = env.fromElements("aaa", "bbb", "ccc");
+        ds.print();
+
+        try {
+            env.execute();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
 
     }

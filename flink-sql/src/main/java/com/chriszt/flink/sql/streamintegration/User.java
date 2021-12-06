@@ -1,4 +1,4 @@
-package com.chriszt.flink.sql;
+package com.chriszt.flink.sql.streamintegration;
 
 public class User {
 
