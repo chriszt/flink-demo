@@ -22,4 +22,9 @@ public class MainTaskTest {
         mainTask.task2();
     }
 
+    @Test
+    public void testTask3() {
+        mainTask.task3();
+    }
+
 }

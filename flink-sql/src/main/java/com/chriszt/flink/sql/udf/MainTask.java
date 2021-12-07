@@ -8,6 +8,9 @@ import org.apache.flink.table.api.Table;
 import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 import org.apache.flink.types.Row;
 
+import java.math.BigDecimal;
+import java.nio.ByteBuffer;
+
 import static org.apache.flink.table.api.Expressions.*;
 
 public class MainTask {
@@ -29,21 +32,39 @@ public class MainTask {
 
         tabEnv.createTemporaryView("MyTable", ds, $("name"), $("age"));
 //        tabEnv.from("MyTable").printSchema();
-//        tabEnv.from("MyTable").select(call(SubstringFunction.class, $("name"), 0, 2));
+//        tabEnv.from("MyTable").select(call(SubstringFunction.class, $("name"), 0, 2)).execute().print();
 
         tabEnv.createTemporarySystemFunction("substring", SubstringFunction.class);
-//        tabEnv.from("MyTable").select(call("substring", $("name"), 0, 2));
+//        tabEnv.from("MyTable").select(call("substring", $("name"), 0, 2)).execute().print();
 
-//        tabEnv.sqlQuery("SELECT substring(name, 0, 2) FROM MyTable");
+//        tabEnv.sqlQuery("SELECT substring(name, 0, 2) FROM MyTable").execute().print();
         tabEnv.executeSql("SELECT substring(name, 0, 2) FROM MyTable").print();
     }
 
     public void task2() {
-        System.out.println("bbb");
+        StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+        StreamTableEnvironment tabEnv = StreamTableEnvironment.create(env);
+
+        tabEnv.createTemporarySystemFunction("mysum", new SumFunction());
+
+        tabEnv.executeSql("SELECT mysum(1, 2)").print();
+        tabEnv.executeSql("SELECT mysum('1', '2')").print();
+        tabEnv.executeSql("SELECT mysum(1, 2, 3, 4)").print();
+    }
+
+    public void task3() {
+        StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+        StreamTableEnvironment tabEnv = StreamTableEnvironment.create(env);
+
+        tabEnv.createTemporarySystemFunction("overloaded", new OverloadedFunction());
+
+        tabEnv.executeSql("SELECT overloaded(1, 2)").print();
+        tabEnv.executeSql("SELECT overloaded(1.1, 2.2)").print();
+        tabEnv.executeSql("SELECT overloaded(1)").print();
     }
 
     public static void main(String[] args) {
         MainTask mainTask = new MainTask();
-        mainTask.task1();
+        mainTask.task3();
     }
 }
