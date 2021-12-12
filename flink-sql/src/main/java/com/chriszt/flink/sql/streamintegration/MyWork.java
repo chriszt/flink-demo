@@ -6,19 +6,24 @@ import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.ProcessFunction;
-import org.apache.flink.table.api.DataTypes;
-import org.apache.flink.table.api.Schema;
-import org.apache.flink.table.api.Table;
+import org.apache.flink.table.api.*;
 import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 import org.apache.flink.table.connector.ChangelogMode;
 import org.apache.flink.table.data.StringData;
+import org.apache.flink.table.expressions.Expression;
 import org.apache.flink.types.Row;
 import org.apache.flink.types.RowKind;
+import org.apache.flink.types.RowUtils;
 import org.apache.flink.util.Collector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.apache.flink.table.api.Expressions.$;
 
 public class MyWork {
 
@@ -504,7 +509,42 @@ public class MyWork {
         }
     }
 
+    private void work11a(String... args) {
+        for (String s : args) {
+            System.out.println(s);
+        }
+    }
 
+    private void work11b(Expression... exprs) {
+        for (Expression e : exprs) {
+            System.out.println(e);
+        }
+    }
+
+    public void work11() {
+        StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+        StreamTableEnvironment tabEnv = StreamTableEnvironment.create(env);
+
+        List<Expression> lst = new ArrayList<>();
+        lst.add($("name"));
+        lst.add($("age"));
+        lst.add($("level"));
+
+        Expression[] cols = lst.toArray(new Expression[lst.size()]);
+
+        Object[] r1 = new Object[]{"Alice", 18, "C"};
+        Object[] r2 = new Object[]{"Bob", 20, "A"};
+        Object[] r3 = new Object[]{"Cindy", 17, "B"};
+
+        DataStream<Row> ds = env.fromElements(
+                Row.of(r1),
+                Row.of(r2),
+                Row.of(r3));
+
+        tabEnv.createTemporaryView("Table1", ds, cols);
+        tabEnv.from("Table1").printSchema();
+        tabEnv.executeSql("SELECT * FROM Table1").print();
+    }
 
     public static void main(String[] args) {
 //        String filePath = MyWork.class.getResource("/tab1.csv").getPath();

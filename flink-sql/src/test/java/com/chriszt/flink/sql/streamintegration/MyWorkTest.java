@@ -66,4 +66,9 @@ public class MyWorkTest {
         myWork.work10();
     }
 
+    @Test
+    public void testWork11() {
+        myWork.work11();
+    }
+
 }
